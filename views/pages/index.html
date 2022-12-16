@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li{
+        padding:0 !important;
+      }
+      
+      li > div{
+        padding: 14px 20px;
+        margin-top: 10px;
+        width: 150px;
+      }
+      
+      .admin > div{
+        background-color: #3C91E6;
+        color: white;
+        border-radius: 10px;
+        border-bottom-right-radius: 0;
+        margin-right: 10px;
+        margin-left: auto;
+      }
+      .client > div{
+        background-color: #dedede;
+        color: black;
+        border-radius: 10px;
+        margin-left: 10px;
+        border-bottom-left-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+      let form = document.getElementById('form');
+      let input = document.getElementById('input');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+      socket.on('chat message', function(data) {
+        let item = document.createElement('li');
+        let div = document.createElement('div');
+        div.textContent = data.message;
+        item.appendChild(div)
+        messages.appendChild(item);
+        if(socket.id === data.sender){
+          item.classList.add('admin')
+        }else{
+          item.classList.add('client')
+        }
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </body>
+</html>
